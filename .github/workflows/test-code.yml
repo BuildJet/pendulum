@@ -4,14 +4,18 @@ on:
   pull_request:
     branches:
       - main
+      - thinkafterbefore-patch-1
   push:
     branches:
       - main
 
 jobs:
   test-code:
-    runs-on: ubuntu-20.04
-
+    strategy:
+      matrix:
+        runs-on: [ubuntu-latest, buildjet-2vcpu-ubuntu-2204, buildjet-4vcpu-ubuntu-2204, buildjet-8vcpu-ubuntu-2204, buildjet-16vcpu-ubuntu-2204, buildjet-32vcpu-ubuntu-2204]
+    name: Test Code - ${{matrix.runs-on}}
+    runs-on: ${{matrix.runs-on}}
     steps:
       - name: Freeing up more disk space
         run: |
@@ -41,9 +45,7 @@ jobs:
 
       - name: Install Protoc
         uses: arduino/setup-protoc@v1
-        with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-
+        
       - name: Check Code
         run: cargo check
 
